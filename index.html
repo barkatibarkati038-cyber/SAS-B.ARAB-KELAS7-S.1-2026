@@ -108,7 +108,7 @@
                 ], key: 'A'
             },
             {
-                id: 6, type: 'mc', image: `Gemini_Generated_Image_bf7bo6bf7bo6bf7b.jfif`,
+                id: 6, type: 'mc', image: `https://placehold.co/600x400/0891b2/ffffff?text=GAMBAR_SOAL_NO_6`,
                 text: `Perhatikan deskripsi visual berikut: <br/>[Deskripsi Gambar]: Seorang wanita berhijab yang sedang mengajar murid-murid di dalam kelas. <br/>Bahasa Arab yang tepat untuk menyebut profesi pada gambar di atas adalah...`,
                 options: [
                     { id: 'A', text: `<span dir="rtl" class="text-right text-2xl font-arabic inline-block mr-2">مُدَرِّسَةٌ</span> (Guru perempuan)` },
@@ -118,7 +118,7 @@
                 ], key: 'A'
             },
             {
-                id: 7, type: 'mc', image: `Gemini_Generated_Image_szd8vwszd8vwszd8.jfif`,
+                id: 7, type: 'mc', image: `https://placehold.co/600x400/0891b2/ffffff?text=GAMBAR_SOAL_NO_7`,
                 text: `<div dir="rtl" class="text-right text-2xl font-arabic leading-loose mb-2">تَأَمَّلِ الصُّورَةَ / الْوَصْفَ الْآتِي:<br/>صُورَةُ: رَجُلٍ يَلْبَسُ الْمَلَابِسَ الْبَيْضَاءَ وَيَفْحَصُ الْمَرِيضَ فِي الْمُسْتَشْفَى.<br/>مَا هَذِهِ الْمِهْنَةُ؟</div>`,
                 options: [
                     { id: 'A', text: `<span dir="rtl" class="text-right text-2xl font-arabic">طَبِيبٌ</span>` },
@@ -806,4 +806,83 @@
                                                     >
                                                         <option value="" disabled>-- Pilih Pasangan --</option>
                                                         {q.options.map(opt => (
-                                                            <option key={opt.id} value={opt.id
+                                                            <option key={opt.id} value={opt.id}>{opt.text.replace(/<[^>]*>?/gm, '')}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Navigasi Bawah */}
+                            <div className="bg-gray-50 p-4 rounded-b-xl border-t border-gray-200 flex justify-between items-center">
+                                <button 
+                                    onClick={() => setCurrentIdx(prev => Math.max(0, prev - 1))}
+                                    disabled={currentIdx === 0}
+                                    className="px-6 py-2.5 bg-white border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+                                >
+                                    Sebelumnya
+                                </button>
+                                
+                                {currentIdx === questions.length - 1 ? (
+                                    <button onClick={() => {
+                                        const unans = questions.filter((_, i) => !isQuestionAnswered(i)).length;
+                                        setModal({
+                                            type: 'confirm',
+                                            message: unans > 0 ? `Terdapat ${unans} soal yang belum dijawab/diselesaikan. Yakin ingin mengumpulkan ujian sekarang?` : `Anda sudah menjawab seluruh soal. Yakin ingin mengumpulkan ujian sekarang?`
+                                        });
+                                    }} className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold shadow-md">
+                                        Selesai & Kumpulkan
+                                    </button>
+                                ) : (
+                                    <button 
+                                        onClick={() => setCurrentIdx(prev => Math.min(questions.length - 1, prev + 1))}
+                                        className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-md"
+                                    >
+                                        Selanjutnya
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Panel Navigasi Kotak Nomor */}
+                        <div className="w-full lg:w-72 bg-white rounded-xl shadow-sm border border-gray-100 p-4 h-fit">
+                            <h3 className="font-bold text-gray-800 mb-4 pb-2 border-b">Navigasi Soal</h3>
+                            <div className="grid grid-cols-5 gap-2">
+                                {questions.map((_, i) => {
+                                    const answered = isQuestionAnswered(i);
+                                    const active = currentIdx === i;
+                                    return (
+                                        <button
+                                            key={i}
+                                            onClick={() => setCurrentIdx(i)}
+                                            className={`
+                                                aspect-square rounded-lg font-bold text-sm flex items-center justify-center transition
+                                                ${answered ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600 border border-gray-200'}
+                                                ${active ? 'ring-4 ring-blue-300/50 scale-105 shadow-md' : 'hover:bg-gray-200'}
+                                            `}
+                                        >
+                                            {i + 1}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                            <div className="mt-6 space-y-2 text-xs text-gray-500">
+                                <div className="flex items-center gap-2"><div className="w-4 h-4 bg-green-500 rounded"></div> Sudah Dijawab</div>
+                                <div className="flex items-center gap-2"><div className="w-4 h-4 bg-gray-100 border border-gray-200 rounded"></div> Belum Dijawab</div>
+                                <div className="flex items-center gap-2"><div className="w-4 h-4 ring-4 ring-blue-300/50 bg-gray-100 rounded"></div> Sedang Dibuka</div>
+                            </div>
+                        </div>
+
+                    </main>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
