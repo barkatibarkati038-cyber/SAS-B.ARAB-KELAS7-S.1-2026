@@ -29,30 +29,32 @@
         ::-webkit-scrollbar-thumb { background: #0891b2; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #164e63; }
         
+        /* Font Arab Lebih Besar & Jelas */
         .arabic-text {
             font-family: 'Amiri', 'Traditional Arabic', 'Arial', sans-serif;
-            line-height: 1.8;
-            font-size: 28px; /* Memperbesar huruf Arab */
-    font-weight: 600; /* Membuat huruf Arab sedikit lebih tebal (opsional) */
-}
+            line-height: 2.2;
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-cyan-600 to-blue-900 min-h-screen text-gray-800 text-lg font-sans selection:bg-cyan-300">
+<body class="bg-gradient-to-br from-cyan-600 to-blue-900 min-h-screen text-gray-800 font-sans selection:bg-cyan-300">
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useEffect, useRef, useMemo } = React;
 
-        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycby6hC7qHToYtgtDZ-I0GLHwGmqp7Hw9dw06AyorJH_yZ10F48rr9mPQpHkyc3gKIYn5/exec"; // GANTI DENGAN URL WEB APP GS ANDA
+        // =====================================================================
+        // GANTI URL DI BAWAH INI DENGAN URL WEB APP GOOGLE SHEETS ANDA
+        // =====================================================================
+        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx8VgRjSIqBWtwyn76m_Eo3bCNf2Yc4bFAluaDtKyEbu2MurvKT4CR7Hsy6KKq48qQ4/exec"; 
+        
         const STORAGE_KEY = "cbt_BAHASA_ARAB_VII";
         const EXAM_DURATION = 60 * 60; // 60 menit dalam detik
 
         // === KUMPULAN ICON SVG MURNI ===
-        const IconUser = () => <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 inline-block mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>;
-        const IconClock = () => <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 inline-block mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>;
-        const IconAlert = () => <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 text-red-500 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>;
-        const IconCheck = () => <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 text-green-500 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>;
+        const IconUser = () => <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 inline-block mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>;
+        const IconClock = () => <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 inline-block mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>;
+        const IconAlert = () => <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 text-red-500 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>;
+        const IconCheck = () => <svg xmlns="http://www.w3.org/2000/svg" className="w-20 h-20 text-green-500 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>;
 
         // === DATA SOAL LENGKAP ===
         const rawQuestionsData = [
@@ -61,17 +63,30 @@
             { id: 3, type: "mc", isRtl: true, text: "مَا هُوَ اسْمُ الْإِشَارَةِ الْمُنَاسِبُ لِلْمُؤَنَّثِ الْقَرِيب؟", options: [{id: "A", text: "هَذَا"}, {id: "B", text: "ذَلِكَ"}, {id: "C", text: "هُوَ"}, {id: "D", text: "هَذِهِ"}], answer: "D" },
             { id: 4, type: "mc", isRtl: false, text: "Dalam bahasa Arab (Isim) artinya kata benda. Di bawah ini yang MERUPAKAN ciri atau tanda-tanda Isim (عَلَامَاتُ الْإِسْمِ) adalah ....", options: [{id: "A", text: "Diawali oleh kata kerja berimbuhan"}, {id: "B", text: "Tidak bisa menerima harakat kasrah"}, {id: "C", text: "Diawali huruf ال Alif Lam dan berakhiran Tanwin (ً ٍ ٌ)"}, {id: "D", text: "Selalu terdiri dari dua huruf saja"}], answer: "C" },
             { id: 5, type: "mc", isRtl: true, text: "كَلِمَةُ \"الْمَدْرَسَةُ\" هِيَ إِسْمٌ، لِأَنَّ فِي أَوَّلِهَا ....", options: [{id: "A", text: "تَنْوِينٌ (Tanwin)"}, {id: "B", text: "أل (Alif Lam)"}, {id: "C", text: "حَرْفُ جَرِّ (Huruf Jar)"}, {id: "D", text: "يَاءُ الْمُتَكَلِّمِ (Ya Mutakallim)"}], answer: "B" },
-            { id: 6, type: "mc", isRtl: false, text: "Perhatikan deskripsi visual berikut:\n.\nBahasa Arab yang tepat untuk menyebut profesi pada gambar di atas adalah....", image: "Gemini_Generated_Image_bf7bo6bf7bo6bf7b.jfif", options: [{id: "A", text: "طَبِيبَةٌ ()", isRtl: true}, {id: "B", text: "مُوَظَفَةٌ ()", isRtl: true}, {id: "C", text: "خَادِمَةٌ ()", isRtl: true}, {id: "D", text: "مُدَرِّسَةٌ ()", isRtl: true}], answer: "D" },
+            { id: 6, type: "mc", isRtl: false, text: ".\nBahasa Arab yang tepat untuk menyebut profesi pada gambar di atas adalah....", image: "Gemini_Generated_Image_bf7bo6bf7bo6bf7b.jfif", options: [{id: "A", text: "طَبِيبَةٌ ", isRtl: true}, {id: "B", text: "مُوَظَفَةٌ ", isRtl: true}, {id: "C", text: "خَادِمَةٌ ", isRtl: true}, {id: "D", text: "مُدَرِّسَةٌ ", isRtl: true}], answer: "D" },
             { id: 7, type: "mc", isRtl: true, text: "تَأَمَّلِ الصُّورَةَ / الْوَصْفَ الْآتِيَ:\nرَجُلٌ يَلْبَسُ الْمَلَابِسَ الْبَيْضَاءَ وَيَفْحَصُ الْمَرِيضَ فِي الْمُسْتَشْفَى\nمَا هَذِهِ الْمِهْنَةُ؟", image: "Gemini_Generated_Image_szd8vwszd8vwszd8.jfif", options: [{id: "A", text: "مُهَنْدِسٌ"}, {id: "B", text: "تَاجِرٌ"}, {id: "C", text: "طَبِيبٌ"}, {id: "D", text: "سَائِقٌ"}], answer: "C" },
-            { id: 8, type: "mc", isRtl: false, text: "Profesi \"مُهَنْدِسٌ\" (Muhandis = Insinyur Laki-laki) ditunjukkan oleh gambaran visual pekerjaan berikut ....", options: [{id: "A", image: "Gemini_Generated_Image_sopir.jfif"}, {id: "B", image: "Gemini_Generated_Image_penjualperempuan.jfif"}, {id: "C", image: "Gemini_Generated_Image_satpam.jfif"}, {id: "D", text: "", image: "Gemini_Generated_Image_insinyur.jfif"}], answer: "D" },
+            { id: 8, type: "mc", isRtl: false, text: "Profesi \"مُهَنْدِسٌ\" (Muhandis = Insinyur Laki-laki) ditunjukkan oleh gambaran visual pekerjaan berikut ....", 
+              options: [
+                {id: "A", text: "", image: "Gemini_Generated_Image_sopir.jfif"}, 
+                {id: "B", text: "", image: "Gemini_Generated_Image_penjualperempuan.jfif"}, 
+                {id: "C", text: "", image: "Gemini_Generated_Image_satpam.jfif"}, 
+                {id: "D", text: "", image: "Gemini_Generated_Image_insinyur.jfif"}
+              ], answer: "D" 
+            },
             { id: 9, type: "mc", isRtl: true, text: "تَأَمَّلِ الْحِوَارَ الْآتِيَ!\nعَزَّامٌ : أَنَا مِنْ مَا لَانْجِ.\nنَوْفَلٌ : ... أَنْتَ يَا عَزَّامُ؟\nاسْمُ الاسْتِفْهَامِ الْمُنَاسِبُ لِإِكْمَالِ الْحِوَارِ هُوَ .....", options: [{id: "A", text: "ما"}, {id: "B", text: "مِنْ أَيْنَ"}, {id: "C", text: "مَنْ"}, {id: "D", text: "كَيْفَ"}], answer: "B" },
-            { id: 10, type: "mc", isRtl: false, text: "Jika seseorang mengucapkan sapaan \"أَهْلًا وَسَهْلًا\" (Selamat datang), maka ucapan balasan yang benar adalah ....", options: [{id: "A", text: "أَهْلًا بِكَ (Selamat datang juga)", isRtl: true}, {id: "B", text: "شُكْرًا (Terima kasih)", isRtl: true}, {id: "C", text: "مَعَ السَّلَامَةِ (Semoga selamat)", isRtl: true}, {id: "D", text: "عَفُوًا (Sama-sama)", isRtl: true}], answer: "A" },
+            { id: 10, type: "mc", isRtl: false, text: "Jika seseorang mengucapkan sapaan \"أَهْلًا وَسَهْلًا\" , maka ucapan balasan yang benar adalah ....", options: [{id: "A", text: "أَهْلًا بِكَ ", isRtl: true}, {id: "B", text: "شُكْرًا ", isRtl: true}, {id: "C", text: "مَعَ السَّلَامَةِ ", isRtl: true}, {id: "D", text: "عَفُوًا ", isRtl: true}], answer: "A" },
             { id: 11, type: "mc", isRtl: true, text: "اقْرَأَ النَّصَّ الْآتِيَ لِلْإِجَابَةِ عَنِ السُّؤَالِ:\n\"اِسْمِي فَارُوقُ ، أَنَا طَالِبٌ فِي هَذِهِ الْمَدْرَسَةِ، وَهَذَا أَخِي، اِسْمُهُ صَالِحٌ، هُوَ طَالِبٌ، وَهَذِهِ صَدِيقَتِي، اِسْمُهَا فِطْرِيَّةُ، هِيَ طَالِبَةٌ. تِلْكَ مُدَرِّسَتِي الْأُسْتَاذَةُ نَفِيسَةُ، هِيَ مُدَرِّسَةُ اللُّغَةِ الْعَرَبِيَّةِ.\"\nالسُّؤَالُ : مَنْ هِيَ صَدِيقَةُ فَارُوقَ فِي النَّصِّ السَّابِقِ؟", options: [{id: "A", text: "نَفِيسَةُ"}, {id: "B", text: "فِطْرِيَّةُ"}, {id: "C", text: "حَفْصَةُ"}, {id: "D", text: "نَبِيلَةُ"}], answer: "B" },
             { id: 12, type: "mc", isRtl: false, text: "Bacalah teks cerita pendek berikut untuk menjawab soal!\n\"أُنْظُرْ ذَلِكَ السَّيِّدُ عُمَرُ ، هُوَ أَمِينُ الْمَكْتَبَةِ فِي هَذِهِ الْمَدْرَسَةِ. وَتِلْكَ السَّيِّدَةُ حَفْصَةُ، هِيَ مُوَظَّفَةٌ فِي الْمَكْتَبَةِ. وَهَذَا بَائِعٌ، اِسْمُهُ السَّيِّدُ خَالِص.\"\nPertanyaan: Apa profesi Bapak Umar (السَّيِّدُ عُمَرُ) berdasarkan cerita di atas?", options: [{id: "A", text: "مُدَرِّسٌ (Guru)", isRtl: true}, {id: "B", text: "بَوَّابٌ (Satpam / Penjaga pintu)", isRtl: true}, {id: "C", text: "سَائِقٌ (Sopir)", isRtl: true}, {id: "D", text: "أَمِينُ الْمَكْتَبَةِ (Kepala / Petugas Perpustakaan)", isRtl: true}], answer: "D" },
             { id: 13, type: "mc", isRtl: true, text: "اقْرَأ النَّصَّ الْآتِيَ لِلْإِجَابَةِ عَنِ السُّؤَالِ:\n\"ذَلِكَ بَوَّابٌ، اِسْمُهُ السَّيِّدُ مَسْعُودٌ ، هُوَ مِنْ سُورَابَايَا، وَتِلْكَ خَادِمَةٌ، اِسْمُهَا نَبِيلَةُ، هِيَ مِنْ بَانُدُونُج.\"\nالسُّؤَالُ : مِنْ أَيْنَ السَّيِّدُ مَسْعُودُ الَّذِي يَعْمَلُ بَوَّابًا؟", options: [{id: "A", text: "مِنْ سُورَابَايَا"}, {id: "B", text: "مِنْ بَانْدُونَج"}, {id: "C", text: "مِنْ مَالَانْجِ"}, {id: "D", text: "مِنْ جَاكَرْتَا"}], answer: "A" },
             { id: 14, type: "mc", isRtl: false, text: "Perhatikan susunan kalimat tata bahasa Arab berikut:\n1. هَذَا طَالِبٌ (Ini siswa laki-laki)\n2. هَذِهِ مُدَرِّسَةٌ (Ini guru perempuan)\n3. هَذَا طَبِيبَةٌ (Ini dokter perempuan)\n4. ذَلِكَ مُوَظَّفٌ (Itu pegawai laki-laki)\nPernyataan susunan kalimat yang BENAR sesuai kaidah Mużakkar (Laki-laki) dan Mu'annas (Perempuan) ditunjukkan oleh nomor...", options: [{id: "A", text: "(1), (3), dan (4)"}, {id: "B", text: "(2), (3), dan (4)"}, {id: "C", text: "(1), (2), dan (4)"}, {id: "D", text: "Hanya (3) dan (4)"}], answer: "C" },
             { id: 15, type: "mc", isRtl: true, text: "تَأَمَّلِ الْعِبَارَاتِ الْآتِيَةَ:\n1. دُخُولُ \"أَلْ\" فِي أَوَّلِ الْكَلِمَةِ\n2. التَّنْوِينُ فِي آخِرِ الْكَلِمَةِ\n3. دُخُولُ حَرْفِ الْجَرِّ\n4. الْفِعْلُ الْمَاضِي\nعَلَامَاتُ الْإِسْمِ الصَّحِيحَةُ هِيَ الْأَرْقَامُ ...", options: [{id: "A", text: "(1)، (2)، و (3)"}, {id: "B", text: "(1)، (2)، و (4)"}, {id: "C", text: "(2)، (3)، و (4)"}, {id: "D", text: "(1)، (3)، و (4)"}], answer: "A" },
-            { id: 16, type: "mc", isRtl: false, text: "Berdasarkan percakapan Azzam dan Naufal (pada teks lengkap ujian), perhatikan pernyataan berikut:\n1. Azzam berasal dari kota Malang, Jawa Timur\n2. Naufal berasal dari kota Bogor, Jawa Barat\n3. Mahmud adalah saudara Azzam yang berprofesi sebagai Guru\n4. Ahmad adalah teman Azzam yang berprofesi sebagai Dokter\nPernyataan yang BENAR sesuai dengan isi percakapan ditunjukkan oleh nomor...", options: [{id: "A", text: "(1) dan (2) saja"}, {id: "B", text: "(1), (2), (3), dan (4) [Semua Benar]"}, {id: "C", text: "(2) dan (3) saja"}, {id: "D", text: "(3) dan (4) saja"}], answer: "B" },
+            { 
+              id: 16, type: "mc", isRtl: false, 
+              textTop: "Bacalah teks percakapan berikut untuk memverifikasi pernyataan!\n", 
+              textArabic: "النَّص : الْحِوَارُ بَيْنَ عَزَّامِ وَنَوْفَلٍ\nعَزَّامٌ : السَّلَامُ عَلَيْكُمْ.\nنَوْفَلٌ : وَعَلَيْكُمُ السَّلَامُ.\nعَزَّامٌ : أَهْلًا وَسَهْلًا.\nنَوْفَلٌ : أَهْلًا بِكَ.\nعَزَّامٌ : اِسْمِي عَزَّامٌ. مَا اسْمُكَ؟\nنَوْفَلٌ : اِسْمِي نَوْفَلٌ.\nعَزَّامٌ : كَيْفَ حَالُكَ؟\nنَوْفَلٌ : بِخَيْرِ الْحَمْدُ لِلَّهِ، وَأَنْتَ؟\nعَزَّامٌ : بِخَيْرِ الْحَمْدُ لِلَّهِ.\nنَوْفَلٌ : مِنْ أَيْنَ أَنْتَ يَا عَزَّامُ؟\nعَزَّامٌ : أَنَا مِنْ مَا لَانْجِ جَاوَى الشَّرْقِيَّةِ.\nنَوْفَلٌ : هَلْ أَنْتَ مَا لَانْجِي؟\nعَزَّامٌ : نَعَمْ، أَنَا مَا لَانْجِيُّ، وَمِنْ أَيْنَ أَنْتَ يَا نَوْفَلُ؟\nنَوْفَلٌ : أَنَا بُوغُورِيُّ. أَنَا مِنْ بُوغُورِ جَاوَى الْغَرْبِيَّةِ.\nعَزَّامٌ : هَذَا أَخِي. اِسْمُهُ مَحْمُودٌ هُوَ مُدَرِّسٌ. هُوَ مِنْ سَامَارِينْدَا.\nنَوْفَلٌ : أَهْلًا وَسَهْلًا يَا مَحْمُودُ، وَمَنْ هَذَا يَا عَزَّامُ؟\nعَزَّامٌ : هَذَا صَدِيقِي. اِسْمُهُ أَحْمَدُ هُوَ طَبِيبٌ. هُوَ مِنْ جَاكَرْتَا.\nنَوْفَلٌ : أَهْلًا وَسَهْلًا يَا أَحْمَدُ",
+              textBottom: "\nPerhatikan pernyataan-pernyataan mengenai isi percakapan di atas:\n1. Azzam berasal dari kota Malang, Jawa Timur (مَالَانْجِ)\n2. Naufal berasal dari kota Bogor, Jawa Barat (بُوغُورِ)\n3. Mahmud adalah saudara Azzam yang berprofesi sebagai Guru (مُدَرِّسٌ)\n4. Ahmad adalah teman Azzam yang berprofesi sebagai Dokter (طَبِيبٌ)\n\nPernyataan yang BENAR sesuai dengan isi percakapan di atas ditunjukkan oleh nomor...", 
+              options: [{id: "A", text: "(1) dan (2) saja"}, {id: "B", text: "(1), (2), (3), dan (4) [Semua Benar]"}, {id: "C", text: "(2) dan (3) saja"}, {id: "D", text: "(3) dan (4) saja"}], answer: "B" 
+            },
             { id: 17, type: "mc", isRtl: false, text: "تَأَمَّلِ الْجُمْلَةَ الْآتِيَةَ: \"ذَهَبَ الطَّالِبُ إِلَى الْمَكْتَبَةِ\"\nكَلِمَةُ \"الْمَكْتَبَةِ\" هِيَ إِسْمٌ، لِمَاذَا؟\nPilihlah alasan yang paling tepat dalam Bahasa Indonesia:", options: [{id: "A", text: "Karena berakhiran Tanwin dan merupakan Kata Kerja"}, {id: "B", text: "Karena merupakan Kata Ganti (Dhomir)"}, {id: "C", text: "Karena diawali oleh Alif Lam (ال) dan didahului oleh huruf Jar (إلى)"}, {id: "D", text: "Karena merupakan Kata Tunjuk (Isim Isyarah)"}], answer: "C" },
             { id: 18, type: "mc", isRtl: false, text: "Kalimat Bahasa Arab di bawah ini yang menggunakan kata tunjuk dekat laki-laki dan kata benda profesi laki-laki yang tepat adalah...", options: [{id: "A", text: "هَذَا مُدَرِّسٌ (Ini guru laki-laki)", isRtl: true}, {id: "B", text: "هَذِهِ مُدَرِّسٌ (Ini guru laki-laki)", isRtl: true}, {id: "C", text: "هَذَا مُدَرِّسَةٌ (Ini guru perempuan)", isRtl: true}, {id: "D", text: "تِلْكَ مُدَرِّسٌ (Itu guru laki-laki)", isRtl: true}], answer: "A" },
             { id: 19, type: "mc", isRtl: true, text: "تَأَمَّلِ الْجُمْلَةَ الْآتِيَةَ:\n\"... طَالِبَةٌ جَدِيدَةٌ\"\nاسْمُ الْإِشَارَةِ الْمُنَاسِبُ لِلْفَرَاغِ هُوَ...", options: [{id: "A", text: "هَذَا"}, {id: "B", text: "هَذِهِ"}, {id: "C", text: "ذَلِكَ"}, {id: "D", text: "هُوَ"}], answer: "B" },
@@ -132,7 +147,7 @@
 
         // === KOMPONEN UTAMA ===
         const App = () => {
-            const [screen, setScreen] = useState('login'); // login, resume, exam, finished
+            const [screen, setScreen] = useState('login');
             const [student, setStudent] = useState({ nama: '', kelas: '', tanggal: new Date().toISOString().split('T')[0] });
             const [questions, setQuestions] = useState([]);
             const [answers, setAnswers] = useState({});
@@ -143,12 +158,10 @@
             // Modal States
             const [alertModal, setAlertModal] = useState({ show: false, message: '', isCritical: false });
             const [confirmModal, setConfirmModal] = useState(false);
-            const [autoSubmitReason, setAutoSubmitReason] = useState('');
             const [finalResult, setFinalResult] = useState(null);
             
             const isSubmitting = useRef(false);
 
-            // Cek sesi tersimpan saat pertama load
             useEffect(() => {
                 const saved = localStorage.getItem(STORAGE_KEY);
                 if (saved) {
@@ -161,7 +174,6 @@
                 }
             }, []);
 
-            // Auto-Save Effect
             useEffect(() => {
                 if (screen === 'exam') {
                     localStorage.setItem(STORAGE_KEY, JSON.stringify({
@@ -170,7 +182,6 @@
                 }
             }, [screen, student, questions, answers, timeLeft, violations]);
 
-            // Timer
             useEffect(() => {
                 if (screen !== 'exam' || isSubmitting.current) return;
                 const timer = setInterval(() => {
@@ -186,7 +197,6 @@
                 return () => clearInterval(timer);
             }, [screen]);
 
-            // Anti-Cheat Listeners
             useEffect(() => {
                 if (screen !== 'exam') return;
 
@@ -246,15 +256,9 @@
 
             const startExam = (isResume = false) => {
                 if (!isResume) {
-                    // Siapkan Soal (Acak)
                     let prepared = shuffleArray(rawQuestionsData).map(q => {
-                        if (q.type === 'mc' && q.options) {
-                            return { ...q, options: shuffleArray(q.options) };
-                        }
-                        // Untuk matching, tidak perlu acak premis agar rapi, tapi acak opsinya
-                        if (q.type === 'matching') {
-                            return { ...q, options: shuffleArray(q.options) };
-                        }
+                        if (q.type === 'mc' && q.options) return { ...q, options: shuffleArray(q.options) };
+                        if (q.type === 'matching') return { ...q, options: shuffleArray(q.options) };
                         return q;
                     });
                     setQuestions(prepared);
@@ -304,10 +308,6 @@
                             }
                         });
                         rincian.push(`Soal ${q.id} (Menjodohkan): [${matchingDetails.join(' | ')}]`);
-                    } else if (q.type === 'essay') {
-                        const ans = (answers[q.id] || '').replace(/\n/g, ' ');
-                        essayRes.push(`Soal ${q.id}: ${ans}`);
-                        rincian.push(`Soal ${q.id} (Esai): [${ans}]`);
                     }
                 });
 
@@ -358,23 +358,23 @@
             if (screen === 'login') {
                 return (
                     <div className="flex items-center justify-center min-h-screen p-4">
-                        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
-                            <h1 className="text-2xl font-bold text-center text-cyan-700 mb-2">BAHASA ARAB</h1>
-                            <p className="text-center text-gray-500 mb-6 text-sm">SUMATIF AKHIR JENJANG (SAJ) 2026/2027 • KELAS VII</p>
-                            <form onSubmit={(e) => { e.preventDefault(); startExam(false); }} className="space-y-4">
+                        <div className="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-lg">
+                            <h1 className="text-3xl font-bold text-center text-cyan-700 mb-2">BAHASA ARAB</h1>
+                            <p className="text-center text-gray-500 mb-8 text-md font-medium">SUMATIF AKHIR JENJANG (SAJ) 2026/2027 • KELAS VII</p>
+                            <form onSubmit={(e) => { e.preventDefault(); startExam(false); }} className="space-y-5">
                                 <div>
-                                    <label className="block text-sm font-semibold mb-1">Nama Lengkap</label>
-                                    <input required type="text" className="w-full border p-2 rounded focus:ring-2 focus:ring-cyan-500 outline-none" value={student.nama} onChange={e => setStudent({...student, nama: e.target.value})} placeholder="Masukkan nama..." />
+                                    <label className="block text-lg font-semibold mb-2">Nama Lengkap</label>
+                                    <input required type="text" className="w-full border-2 p-3 text-lg rounded-lg focus:ring-4 focus:ring-cyan-500 outline-none" value={student.nama} onChange={e => setStudent({...student, nama: e.target.value})} placeholder="Masukkan nama..." />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold mb-1">Kelas</label>
-                                    <input required type="text" className="w-full border p-2 rounded focus:ring-2 focus:ring-cyan-500 outline-none" value={student.kelas} onChange={e => setStudent({...student, kelas: e.target.value})} placeholder="Contoh: VII-A" />
+                                    <label className="block text-lg font-semibold mb-2">Kelas</label>
+                                    <input required type="text" className="w-full border-2 p-3 text-lg rounded-lg focus:ring-4 focus:ring-cyan-500 outline-none" value={student.kelas} onChange={e => setStudent({...student, kelas: e.target.value})} placeholder="Contoh: VII-A" />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold mb-1">Tanggal Ujian</label>
-                                    <input required type="date" className="w-full border p-2 rounded focus:ring-2 focus:ring-cyan-500 outline-none" value={student.tanggal} onChange={e => setStudent({...student, tanggal: e.target.value})} />
+                                    <label className="block text-lg font-semibold mb-2">Tanggal Ujian</label>
+                                    <input required type="date" className="w-full border-2 p-3 text-lg rounded-lg focus:ring-4 focus:ring-cyan-500 outline-none" value={student.tanggal} onChange={e => setStudent({...student, tanggal: e.target.value})} />
                                 </div>
-                                <button type="submit" className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 rounded-lg mt-4 transition-all">MULAI UJIAN</button>
+                                <button type="submit" className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-xl py-4 rounded-xl mt-6 transition-all shadow-lg">MULAI UJIAN</button>
                             </form>
                         </div>
                     </div>
@@ -384,13 +384,13 @@
             if (screen === 'resume') {
                 return (
                     <div className="flex items-center justify-center min-h-screen p-4">
-                        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md text-center">
+                        <div className="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-lg text-center">
                             <IconAlert />
-                            <h2 className="text-xl font-bold mb-4">Sesi Ujian Tersimpan Ditemukan!</h2>
-                            <p className="text-gray-600 mb-6 text-sm">Sistem mendeteksi Anda belum menyelesaikan ujian sebelumnya.</p>
-                            <div className="space-y-3">
-                                <button onClick={() => startExam(true)} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded">LANJUTKAN UJIAN</button>
-                                <button onClick={() => { localStorage.removeItem(STORAGE_KEY); setScreen('login'); }} className="w-full bg-red-100 hover:bg-red-200 text-red-700 font-bold py-2 rounded">HAPUS & MULAI ULANG</button>
+                            <h2 className="text-2xl font-bold mb-4">Sesi Ujian Tersimpan!</h2>
+                            <p className="text-gray-600 mb-8 text-lg">Sistem mendeteksi Anda belum menyelesaikan ujian sebelumnya.</p>
+                            <div className="space-y-4">
+                                <button onClick={() => startExam(true)} className="w-full bg-green-600 hover:bg-green-700 text-white text-xl font-bold py-3 rounded-lg shadow-md">LANJUTKAN UJIAN</button>
+                                <button onClick={() => { localStorage.removeItem(STORAGE_KEY); setScreen('login'); }} className="w-full bg-red-100 hover:bg-red-200 text-red-700 text-lg font-bold py-3 rounded-lg">HAPUS & MULAI ULANG</button>
                             </div>
                         </div>
                     </div>
@@ -400,26 +400,26 @@
             if (screen === 'finished') {
                 return (
                     <div className="flex items-center justify-center min-h-screen p-4">
-                        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md text-center">
+                        <div className="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-lg text-center">
                             {finalResult?.loading ? (
                                 <div>
-                                    <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-cyan-600 mx-auto mb-4"></div>
-                                    <h2 className="text-xl font-bold">Mengirim Data...</h2>
+                                    <div className="animate-spin rounded-full h-20 w-20 border-b-4 border-cyan-600 mx-auto mb-6"></div>
+                                    <h2 className="text-2xl font-bold text-gray-700">Mengirim Data...</h2>
                                 </div>
                             ) : (
                                 <div>
                                     <IconCheck />
-                                    <h2 className="text-2xl font-bold text-green-600 mb-2">Ujian Selesai!</h2>
-                                    <p className="text-gray-600 mb-4">{finalResult.Keterangan}</p>
-                                    <div className="bg-gray-100 p-4 rounded-lg text-left text-sm space-y-2 mb-6">
+                                    <h2 className="text-3xl font-bold text-green-600 mb-3">Ujian Selesai!</h2>
+                                    <p className="text-gray-600 text-lg mb-6">{finalResult.Keterangan}</p>
+                                    <div className="bg-gray-100 p-6 rounded-xl text-left text-lg space-y-3 mb-8">
                                         <p><strong>Nama:</strong> {finalResult.Nama}</p>
                                         <p><strong>Kelas:</strong> {finalResult.Kelas}</p>
-                                        <p><strong>Skor:</strong> <span className="text-xl font-bold text-cyan-600">{finalResult.Skor}</span></p>
+                                        <p><strong>Skor Akhir:</strong> <span className="text-3xl font-extrabold text-cyan-700 align-middle ml-2">{finalResult.Skor}</span></p>
                                     </div>
                                     {finalResult.success ? (
-                                        <p className="text-green-600 font-semibold text-sm">Data berhasil tersimpan di server.</p>
+                                        <p className="text-green-700 font-bold text-lg bg-green-100 py-2 rounded-lg">Data berhasil tersimpan di server.</p>
                                     ) : (
-                                        <p className="text-red-500 font-semibold text-sm">Gagal terhubung ke server, namun data telah tercatat di sistem lokal.</p>
+                                        <p className="text-red-600 font-bold text-lg bg-red-100 py-2 rounded-lg">Data telah tercatat di sistem lokal.</p>
                                     )}
                                 </div>
                             )}
@@ -430,16 +430,13 @@
 
             // === EXAM UI ===
             const q = questions[activeIdx];
+            const hasImagesInOptions = q.type === 'mc' && q.options.some(opt => opt.image);
             
-            // Pengecekan status jawaban untuk navigasi grid
             const getQuestionStatus = (idx) => {
                 const quest = questions[idx];
                 const ans = answers[quest.id];
-                if (quest.type === 'mc' || quest.type === 'essay') {
-                    return ans ? 'bg-green-500 text-white' : 'bg-white text-gray-700 border-gray-300';
-                }
+                if (quest.type === 'mc' || quest.type === 'essay') return ans ? 'bg-green-500 text-white' : 'bg-white text-gray-700 border-gray-300';
                 if (quest.type === 'matching') {
-                    // Benar-benar dijawab jika semua premis terisi
                     const isAllFilled = quest.premises.every(p => ans && ans[p.id]);
                     return isAllFilled ? 'bg-green-500 text-white' : 'bg-white text-gray-700 border-gray-300';
                 }
@@ -449,16 +446,16 @@
             return (
                 <div className="flex flex-col h-screen exam-active bg-gray-50">
                     {/* Header */}
-                    <header className="bg-cyan-700 text-white p-4 shadow-md flex justify-between items-center shrink-0">
+                    <header className="bg-cyan-800 text-white p-5 shadow-md flex justify-between items-center shrink-0">
                         <div>
-                            <h1 className="text-lg font-bold">BAHASA ARAB</h1>
-                            <p className="text-xs opacity-80">SAJ 2026/2027 • Kelas VII</p>
+                            <h1 className="text-2xl font-bold tracking-wider">BAHASA ARAB</h1>
+                            <p className="text-sm font-medium text-cyan-200">SAJ 2026/2027 • Kelas VII</p>
                         </div>
-                        <div className="flex items-center space-x-4">
-                            <div className="hidden md:flex items-center text-sm bg-cyan-800 px-3 py-1 rounded">
-                                <IconUser /> {student.nama}
+                        <div className="flex items-center space-x-6">
+                            <div className="hidden md:flex items-center text-lg bg-cyan-900 px-4 py-2 rounded-lg shadow-inner">
+                                <IconUser /> <span className="font-semibold">{student.nama}</span>
                             </div>
-                            <div className={`font-mono text-lg font-bold px-3 py-1 rounded ${timeLeft < 300 ? 'bg-red-500' : 'bg-cyan-900'}`}>
+                            <div className={`font-mono text-2xl font-bold px-5 py-2 rounded-lg shadow-inner flex items-center ${timeLeft < 300 ? 'bg-red-600 animate-pulse' : 'bg-cyan-900'}`}>
                                 <IconClock /> {formatTime(timeLeft)}
                             </div>
                         </div>
@@ -467,33 +464,49 @@
                     {/* Main Layout */}
                     <div className="flex flex-1 overflow-hidden flex-col md:flex-row">
                         {/* Area Soal */}
-                        <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24">
-                            <div className="bg-white rounded-lg shadow p-6 max-w-4xl mx-auto">
-                                <div className="mb-4 text-sm font-bold text-cyan-600 border-b pb-2">Soal No. {activeIdx + 1}</div>
+                        <div className="flex-1 overflow-y-auto p-4 md:p-8 pb-28">
+                            <div className="bg-white rounded-2xl shadow-lg p-6 md:p-10 max-w-5xl mx-auto border border-gray-100">
+                                <div className="mb-6 text-lg font-extrabold text-cyan-700 border-b-2 border-cyan-100 pb-3 uppercase tracking-wide">Soal No. {activeIdx + 1}</div>
                                 
-                                {/* Teks Soal */}
-                                <div className={`mb-6 text-lg whitespace-pre-wrap ${q.isRtl ? 'arabic-text text-right text-2xl' : 'text-left'}`} dir={q.isRtl ? 'rtl' : 'ltr'}>
-                                    {q.text}
-                                </div>
+                                {/* Teks Soal Spesial Multi-part (Contoh untuk Soal No. 16) */}
+                                {q.textTop && <div className="mb-4 text-xl font-medium whitespace-pre-wrap">{q.textTop}</div>}
+                                {q.textArabic && <div className="mb-6 text-3xl md:text-4xl arabic-text text-right text-gray-900 bg-cyan-50 p-6 rounded-xl border border-cyan-100 whitespace-pre-wrap" dir="rtl">{q.textArabic}</div>}
+                                {q.textBottom && <div className="mb-8 text-xl font-medium whitespace-pre-wrap">{q.textBottom}</div>}
+
+                                {/* Teks Soal Standar */}
+                                {q.text && (
+                                    <div className={`mb-8 font-medium whitespace-pre-wrap ${q.isRtl ? 'arabic-text text-right text-3xl md:text-4xl text-gray-900' : 'text-left text-xl'}`} dir={q.isRtl ? 'rtl' : 'ltr'}>
+                                        {q.text}
+                                    </div>
+                                )}
 
                                 {/* Gambar Soal */}
                                 {q.image && (
-                                    <div className="mb-6 flex justify-center">
-                                        <img src={q.image} alt="Ilustrasi Soal" className="max-w-full h-auto rounded border shadow-sm max-h-64 object-contain" />
+                                    <div className="mb-8 flex justify-center bg-gray-50 p-4 rounded-xl border">
+                                        <img src={q.image} alt="Ilustrasi Soal" className="max-w-full h-auto rounded-lg shadow-sm max-h-80 object-contain" />
                                     </div>
                                 )}
 
                                 {/* Tipe: Pilihan Ganda */}
                                 {q.type === 'mc' && (
-                                    <div className="space-y-3">
+                                    <div className={hasImagesInOptions ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "space-y-4"}>
                                         {q.options.map((opt) => {
                                             const isSelected = answers[q.id] === opt.id;
                                             return (
-                                                <label key={opt.id} className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${isSelected ? 'border-cyan-500 bg-cyan-50' : 'border-gray-200 hover:border-cyan-300'}`}>
-                                                    <input type="radio" name={`q_${q.id}`} value={opt.id} checked={isSelected} onChange={() => setAnswers({...answers, [q.id]: opt.id})} className="w-5 h-5 text-cyan-600 focus:ring-cyan-500 shrink-0" />
-                                                    <div className={`ml-3 flex-1 ${opt.isRtl ? 'arabic-text text-right text-xl' : ''}`} dir={opt.isRtl ? 'rtl' : 'ltr'}>
-                                                        {opt.text}
-                                                        {opt.image && <img src={opt.image} alt="Opsi" className="mt-2 rounded max-h-32 object-contain" />}
+                                                <label key={opt.id} className={`flex ${hasImagesInOptions ? 'flex-col' : 'items-center'} p-5 border-2 rounded-xl cursor-pointer transition-all duration-200 ${isSelected ? 'border-cyan-500 bg-cyan-50 shadow-md ring-1 ring-cyan-500' : 'border-gray-200 hover:border-cyan-400 hover:bg-gray-50'}`}>
+                                                    
+                                                    {/* Gambar Opsi (Jika ada) */}
+                                                    {hasImagesInOptions && opt.image && (
+                                                        <div className="w-full flex justify-center mb-4 bg-white p-2 rounded-lg border">
+                                                            <img src={opt.image} alt="Opsi" className="rounded-lg max-h-48 object-contain" />
+                                                        </div>
+                                                    )}
+
+                                                    <div className={`flex items-center w-full`}>
+                                                        <input type="radio" name={`q_${q.id}`} value={opt.id} checked={isSelected} onChange={() => setAnswers({...answers, [q.id]: opt.id})} className="w-6 h-6 text-cyan-600 focus:ring-cyan-500 shrink-0" />
+                                                        <div className={`ml-4 flex-1 ${opt.isRtl ? 'arabic-text text-right text-2xl md:text-3xl font-bold' : 'text-xl font-medium'}`} dir={opt.isRtl ? 'rtl' : 'ltr'}>
+                                                            {opt.text}
+                                                        </div>
                                                     </div>
                                                 </label>
                                             );
@@ -503,19 +516,19 @@
 
                                 {/* Tipe: Menjodohkan */}
                                 {q.type === 'matching' && (
-                                    <div className="space-y-4">
-                                        <div className="bg-blue-50 p-4 rounded-lg mb-6 text-sm text-blue-800">
-                                            <strong>Panduan:</strong> Pilih pasangan yang tepat untuk setiap premis di bawah ini melalui menu dropdown.
+                                    <div className="space-y-6">
+                                        <div className="bg-blue-50 border border-blue-200 p-5 rounded-xl mb-8 text-lg text-blue-900 shadow-sm">
+                                            <strong>Panduan:</strong> Pilih pasangan jawaban yang tepat untuk setiap premis di bawah ini melalui menu dropdown.
                                         </div>
-                                        <div className="grid grid-cols-1 gap-4">
+                                        <div className="grid grid-cols-1 gap-5">
                                             {q.premises.map((p, idx) => (
-                                                <div key={p.id} className="flex flex-col md:flex-row md:items-center justify-between p-3 border rounded-lg bg-gray-50">
-                                                    <div className={`flex-1 mb-2 md:mb-0 ${p.isRtl ? 'arabic-text text-right text-xl' : ''}`} dir={p.isRtl ? 'rtl' : 'ltr'}>
-                                                        <span className="font-bold mr-2 text-sm text-gray-500">{idx+1}.</span>{p.text}
+                                                <div key={p.id} className="flex flex-col lg:flex-row lg:items-center justify-between p-5 border-2 rounded-xl bg-gray-50 hover:bg-white transition-colors">
+                                                    <div className={`flex-1 mb-4 lg:mb-0 ${p.isRtl ? 'arabic-text text-right text-3xl font-bold' : 'text-xl'}`} dir={p.isRtl ? 'rtl' : 'ltr'}>
+                                                        <span className="font-black mr-3 text-lg text-gray-400">{idx+1}.</span>{p.text}
                                                     </div>
-                                                    <div className="w-full md:w-1/2 md:ml-4">
+                                                    <div className="w-full lg:w-1/2 lg:ml-6">
                                                         <select 
-                                                            className={`w-full p-2 border rounded outline-none focus:ring-2 focus:ring-cyan-500 ${answers[q.id]?.[p.id] ? 'bg-cyan-50 border-cyan-400' : 'bg-white'}`}
+                                                            className={`w-full p-4 text-lg border-2 rounded-xl outline-none focus:ring-4 focus:ring-cyan-500 font-medium cursor-pointer transition-colors ${answers[q.id]?.[p.id] ? 'bg-cyan-50 border-cyan-400 text-cyan-900' : 'bg-white border-gray-300'}`}
                                                             value={answers[q.id]?.[p.id] || ''}
                                                             onChange={(e) => {
                                                                 const val = e.target.value;
@@ -525,9 +538,9 @@
                                                                 }));
                                                             }}
                                                         >
-                                                            <option value="" disabled>-- Pilih Pasangan --</option>
+                                                            <option value="" disabled>-- Pilih Pasangan Jawaban --</option>
                                                             {q.options.map(opt => (
-                                                                <option key={opt.id} value={opt.id}>
+                                                                <option key={opt.id} value={opt.id} className="text-lg">
                                                                     [{opt.id}] {opt.text}
                                                                 </option>
                                                             ))}
@@ -542,10 +555,10 @@
                         </div>
 
                         {/* Navigasi Soal (Kanan) */}
-                        <div className="w-full md:w-72 bg-white border-l shadow-lg flex flex-col shrink-0">
-                            <div className="p-4 bg-gray-100 font-bold border-b text-center">Navigasi Soal</div>
-                            <div className="p-4 flex-1 overflow-y-auto">
-                                <div className="grid grid-cols-5 gap-2">
+                        <div className="w-full md:w-80 bg-white border-l shadow-2xl flex flex-col shrink-0 z-10">
+                            <div className="p-5 bg-gray-100 font-extrabold text-lg border-b text-center text-gray-700 uppercase tracking-widest">Navigasi Soal</div>
+                            <div className="p-5 flex-1 overflow-y-auto">
+                                <div className="grid grid-cols-5 gap-3">
                                     {questions.map((quest, idx) => {
                                         const statusClass = getQuestionStatus(idx);
                                         const isActive = idx === activeIdx;
@@ -553,7 +566,7 @@
                                             <button 
                                                 key={quest.id} 
                                                 onClick={() => setActiveIdx(idx)}
-                                                className={`h-10 rounded border font-semibold flex items-center justify-center transition-all ${statusClass} ${isActive ? 'ring-4 ring-cyan-300 border-cyan-600 scale-110' : 'hover:bg-gray-50'}`}
+                                                className={`h-12 text-lg rounded-lg border-2 font-bold flex items-center justify-center transition-all ${statusClass} ${isActive ? 'ring-4 ring-cyan-300 border-cyan-700 scale-110 shadow-md' : 'hover:bg-gray-100 border-gray-200'}`}
                                             >
                                                 {idx + 1}
                                             </button>
@@ -565,42 +578,42 @@
                     </div>
 
                     {/* Footer Navigasi Bawah */}
-                    <div className="bg-white border-t p-4 flex justify-between items-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] shrink-0 z-10">
-                        <button onClick={() => setActiveIdx(Math.max(0, activeIdx - 1))} disabled={activeIdx === 0} className="px-6 py-2 bg-gray-200 text-gray-700 rounded font-semibold disabled:opacity-50">Sebelumnnya</button>
+                    <div className="bg-white border-t p-5 flex justify-between items-center shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] shrink-0 z-20 absolute bottom-0 left-0 right-0 md:right-80">
+                        <button onClick={() => setActiveIdx(Math.max(0, activeIdx - 1))} disabled={activeIdx === 0} className="px-8 py-3 text-lg bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-xl font-bold disabled:opacity-40 transition-colors">Sebelumnnya</button>
                         
                         {activeIdx === questions.length - 1 ? (
-                            <button onClick={() => setConfirmModal(true)} className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded font-bold shadow-lg">Selesai & Kumpulkan</button>
+                            <button onClick={() => setConfirmModal(true)} className="px-8 py-3 text-lg bg-green-600 hover:bg-green-700 text-white rounded-xl font-extrabold shadow-lg transition-transform transform hover:scale-105">Selesai & Kumpulkan</button>
                         ) : (
-                            <button onClick={() => setActiveIdx(Math.min(questions.length - 1, activeIdx + 1))} className="px-6 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded font-semibold">Selanjutnya</button>
+                            <button onClick={() => setActiveIdx(Math.min(questions.length - 1, activeIdx + 1))} className="px-8 py-3 text-lg bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl font-bold shadow-md transition-colors">Selanjutnya</button>
                         )}
                     </div>
 
-                    {/* MODAL SYSTEM (Anti Flicker, No browser native alert) */}
+                    {/* MODAL SYSTEM */}
                     
                     {/* Alert Modal */}
                     {alertModal.show && (
-                        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/60 backdrop-blur-sm">
-                            <div className="bg-white rounded-xl shadow-2xl p-8 max-w-sm w-full text-center transform scale-100 transition-transform">
+                        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/70 backdrop-blur-md">
+                            <div className="bg-white rounded-2xl shadow-2xl p-10 max-w-md w-full text-center">
                                 <IconAlert />
-                                <h3 className="text-xl font-bold text-red-600 mb-2">PERINGATAN!</h3>
-                                <p className="text-gray-700 mb-6 whitespace-pre-wrap">{alertModal.message}</p>
+                                <h3 className="text-2xl font-black text-red-600 mb-3">PERINGATAN!</h3>
+                                <p className="text-gray-800 text-lg mb-8 font-medium whitespace-pre-wrap">{alertModal.message}</p>
                                 <button onClick={() => {
                                     setAlertModal({ show: false });
-                                    reqFullscreen(); // Paksa kembali
-                                }} className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded">Saya Mengerti</button>
+                                    reqFullscreen(); 
+                                }} className="w-full bg-red-600 hover:bg-red-700 text-white text-xl font-bold py-4 rounded-xl shadow-lg transition-colors">Saya Mengerti</button>
                             </div>
                         </div>
                     )}
 
                     {/* Confirm Submit Modal */}
                     {confirmModal && (
-                        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/60 backdrop-blur-sm">
-                            <div className="bg-white rounded-xl shadow-2xl p-8 max-w-sm w-full text-center">
-                                <h3 className="text-xl font-bold text-gray-800 mb-2">Konfirmasi Pengumpulan</h3>
-                                <p className="text-gray-600 mb-6">Apakah Anda yakin ingin menyelesaikan dan mengumpulkan ujian ini? Anda tidak bisa kembali setelah ini.</p>
-                                <div className="flex space-x-3">
-                                    <button onClick={() => setConfirmModal(false)} className="flex-1 bg-gray-200 text-gray-800 font-bold py-2 rounded">Batal</button>
-                                    <button onClick={() => processSubmit('Selesai Mandiri')} className="flex-1 bg-green-600 text-white font-bold py-2 rounded">Ya, Kumpulkan</button>
+                        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/70 backdrop-blur-md">
+                            <div className="bg-white rounded-2xl shadow-2xl p-10 max-w-md w-full text-center">
+                                <h3 className="text-2xl font-black text-gray-900 mb-3">Konfirmasi Pengumpulan</h3>
+                                <p className="text-gray-600 text-lg font-medium mb-8">Apakah Anda yakin ingin menyelesaikan dan mengumpulkan ujian ini? Anda tidak bisa kembali setelah ini.</p>
+                                <div className="flex space-x-4">
+                                    <button onClick={() => setConfirmModal(false)} className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-900 text-lg font-bold py-3 rounded-xl transition-colors">Batal</button>
+                                    <button onClick={() => processSubmit('Selesai Mandiri')} className="flex-1 bg-green-600 hover:bg-green-700 text-white text-lg font-bold py-3 rounded-xl shadow-lg transition-colors">Ya, Kumpulkan</button>
                                 </div>
                             </div>
                         </div>
